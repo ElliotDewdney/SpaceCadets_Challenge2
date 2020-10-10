@@ -1,9 +1,12 @@
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
+import java.util.Scanner;
 import java.util.Stack;
 
 public class BareBones {
 
-    static class BareBonesRuntime{
+    public static class BareBonesRuntime{
 
         private static class conditionalJump{
             public interface booleanCondition{
@@ -31,7 +34,7 @@ public class BareBones {
                 this.parameters = parameters;
             }
             void runLine(BareBonesRuntime runtime){
-                action.action.action(runtime, parameters);
+                action.runAction(runtime, parameters);
             }
         }
 
@@ -45,11 +48,17 @@ public class BareBones {
         private int[] FinalVarsValues;
 
         public BareBonesRuntime(String[] lines){
+            instructions.values();
             programLine[] programLines = new programLine[lines.length];
             for(int i = 0; i < lines.length; i++){
-                String[] line = lines[i].split("\\w");
+                String[] line = lines[i].split(" +");
                 String[] parameters = new String[line.length-1];
                 for(int j = 0; j < parameters.length; j++) parameters[j] = line[j+1];
+
+                /*System.out.println("Loading instruction = " + lines[i]);
+                System.out.print("Instruction : "+ line[0]+"\nParameters : ");
+                for(int j = 0; j < parameters.length; j++) System.out.print(" -"+parameters[j]);
+                System.out.println("\n"+instructionsHashMap.get(line[0])+"\n===========================");*/
                 programLines[i] = new programLine(instructionsHashMap.get(line[0]), parameters);
             }
             constructor(programLines);
@@ -59,8 +68,12 @@ public class BareBones {
             constructor(lines);
         }
 
-        private void constructor(programLine[] lines){
+        private void constructor(programLine[] lines) {
+            comparators.values();
             programLines = lines;
+        }
+
+        public void runCode(){
             while(programCounter<programLines.length){
                 programLines[programCounter].runLine(this);
                 programCounter++;
@@ -156,18 +169,23 @@ public class BareBones {
                 instructionsHashMap.put(name, this);
             }
             public void runAction(BareBonesRuntime runtime, String[] parameters){
+                /*System.out.println("Running : " + name + " With parameters : ");
+                for(String temp : parameters) System.out.println(" -"+temp);*/
                 action.action(runtime, parameters);
             }
         }
 
     }
 
-    public static void main(String args[]){
-        BareBonesRuntime temp = new BareBonesRuntime(new BareBonesRuntime.programLine[]{
-                new BareBonesRuntime.programLine(BareBonesRuntime.instructions.CLEAR, new String[]{"X"}),
-                new BareBonesRuntime.programLine(BareBonesRuntime.instructions.INCREMENT, new String[]{"X"}),
-                new BareBonesRuntime.programLine(BareBonesRuntime.instructions.INCREMENT, new String[]{"X"}),
-        });
-        System.out.println(temp.getVariablesNames()[0] + " -> " + temp.getVariablesValues()[0]);
+    public static BareBonesRuntime RunBareBones(String code){
+        String[] codeLines = code.split(";");
+
+        for(int i = 0; i< codeLines.length; i++)
+            codeLines[i] = codeLines[i].trim();
+
+        BareBonesRuntime runtime = new BareBonesRuntime(codeLines);
+        runtime.runCode();
+        return runtime;
     }
+
 }
